@@ -1,0 +1,6 @@
+10.10.1.1
+10.10.1.2
+10.10.1.3
+
+spark-3.3.4-bin-hadoop3/conf/spark-env.sh
+export PYSPARK_PYTHON=/usr/bin/python3.7 and export PYSPARK_DRIVER_PYTHON=/usr/bin/python3.7
