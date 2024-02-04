@@ -35,11 +35,11 @@ def pagerank(spark, input_file_path):
         contributions = links_ranks.flatMap(
             lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
         
-        contributions_r = contributions.collect()
-        i = 0
-        while i < 10:
-            print(contributions_r[i])
-            i += 1
+        # contributions_r = contributions.collect()
+        # i = 0
+        # while i < 10:
+        #     print(contributions_r[i])
+        #     i += 1
         ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
     final_ranks = ranks.collect()
