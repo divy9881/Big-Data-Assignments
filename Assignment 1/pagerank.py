@@ -3,8 +3,10 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 
 def pagerank(spark, input_file_path):
-    df = spark.read.csv(input_file_path, sep='\t', header=False)
-    df.show()
+    df = sc.textFile(input_file_path)
+    
+    links = df.map(lambda line: tuple(line.split("\t")))
+    print(links)
     # links = df.rdd.map(lambda row: (row[0], row[1]))
 
     # ranks = links.map(lambda pair: (pair[0], 1.0))
