@@ -25,9 +25,11 @@ def pagerank(spark, input_file_path):
     ranks = links.flatMap(assign_ranks)
     print(ranks.count())
 
+    links = links.groupByKey().mapValues(list)
+
     for iteration in range(1):
-        links_ranks = links.join(ranks).map(lambda x: (x[0], (x[1][0], x[1][1]))).groupByKey().mapValues(list)
-        
+        links_ranks = links.join(ranks)
+
         links_r = links_ranks.top(10)
         for l in links_r:
             print(l)
