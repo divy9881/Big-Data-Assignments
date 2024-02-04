@@ -6,8 +6,13 @@ def pagerank(spark, input_file_path):
     df = sc.textFile(input_file_path)
     
     links = df.map(lambda line: tuple(line.split("\t")))
+    links = links.collect()
+    i = 0
+    while i < 10:
+        print(links[i])
+        i += 1
     # print(links)
-    links.foreach(print)
+    # links.foreach(print)
     # links = df.rdd.map(lambda row: (row[0], row[1]))
 
     # ranks = links.map(lambda pair: (pair[0], 1.0))
