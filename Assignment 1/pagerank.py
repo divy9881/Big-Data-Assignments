@@ -4,10 +4,11 @@ from pyspark.sql import SparkSession
 
 def pagerank(spark, input_file_path):
     df = spark.read.csv(input_file_path, header=False)
-    links = df.rdd.map(lambda row: (row[0], row[1]))
+    df.show()
+    # links = df.rdd.map(lambda row: (row[0], row[1]))
 
-    ranks = links.map(lambda pair: (pair[0], 1.0))
-    ranks.foreach(print)
+    # ranks = links.map(lambda pair: (pair[0], 1.0))
+    # ranks.foreach(print)
     # ranks = dict()
     # for link in links:
     #     if link[0] not in ranks:
