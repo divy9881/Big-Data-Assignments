@@ -3,7 +3,7 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 
 def pagerank(spark, input_file_path):
-    df = spark.read.csv(input_file_path, header=False)
+    df = spark.read.csv(input_file_path, sep='\t', header=False)
     df.show()
     # links = df.rdd.map(lambda row: (row[0], row[1]))
 
