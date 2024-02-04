@@ -12,7 +12,7 @@ def generate_sorted_data(input_path, output_path):
 
 if __name__ == "__main__":
     spark = SparkSession.builder \
-        .appName("Big-Data-Assignment-1") \
+        .appName("Big-Data-Assignment-1-Part-2") \
         .config("spark.driver.memory", "30g") \
         .config("spark.executor.memory", "30g") \
         .config("spark.executor.cores", "5") \
