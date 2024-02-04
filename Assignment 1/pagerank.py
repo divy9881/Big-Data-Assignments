@@ -4,6 +4,12 @@ from pyspark.sql import SparkSession
 
 lookup = dict()
 
+def filter_lines(line):
+    if line.startswith("#"):
+        return []
+    else:
+        return [tuple(line.split("\t"))]
+    
 def assign_ranks(pair):    
     if pair[0] not in lookup:
         lookup[pair[0]] = True
@@ -14,28 +20,19 @@ def assign_ranks(pair):
 def pagerank(spark, input_file_path):
     df = sc.textFile(input_file_path)
     
-    links = df.map(lambda line: tuple(line.split("\t"))).filter(lambda link: not link[0].startswith('#'))
+    links = df.flatMap(filter_lines)
 
     ranks = links.flatMap(assign_ranks)
-    ranks = ranks.collect()
-    i = 0
-    while i < 10:
-        print(ranks[i])
-        i += 1
-    # ranks = dict()
-    # for link in links:
-    #     if link[0] not in ranks:
-    #         ranks[link[0]] = 1.0
 
-    # for iteration in range(10):
-    #     contributions = links.join(ranks).flatMap(
-    #         lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
+    for iteration in range(10):
+        contributions = links.join(ranks).flatMap(
+            lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
         
-    #     ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
+        ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
-    # final_ranks = ranks.collect()
-    # for page, rank in final_ranks:
-    #     print(f"Page: {page}, Rank: {rank}")
+    final_ranks = ranks.collect()
+    for page, rank in final_ranks:
+        print(f"Page: {page}, Rank: {rank}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
