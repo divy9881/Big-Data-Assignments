@@ -1,5 +1,4 @@
 import sys
-print(sys.version)
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
@@ -12,7 +11,6 @@ def generate_sorted_data(input_path, output_path):
     sorted_data.coalesce(1).write.mode('overwrite').csv(output_path, header=True)
 
 if __name__ == "__main__":
-    print(sys.version)
     spark = SparkSession.builder \
         .appName("Big-Data-Assignment-1") \
         .config("spark.driver.memory", "30g") \
