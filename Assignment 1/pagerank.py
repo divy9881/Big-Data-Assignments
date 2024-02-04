@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 def pagerank(spark, input_file_path):
     df = sc.textFile(input_file_path)
     
-    links = df.map(lambda line: tuple(line.split("\t")))
+    links = df.map(lambda line: tuple(line.split("\t"))).filter(lambda link: not link[0].startswith('#'))
     links = links.collect()
     i = 0
     while i < 10:
