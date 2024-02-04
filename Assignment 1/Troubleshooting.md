@@ -6,10 +6,11 @@ sudo chmod ugo+rwx /mnt/data/namenode
 sudo chmod ugo+rwx /mnt/data/datanode
 ```
 
-### Add hadoop exeecutables to env
+### Add hadoop and spark executables to env
 ```
 export PATH=$PATH:hadoop-3.3.6/bin
 export PATH=$PATH:hadoop-3.3.6/sbin
+export PATH=$PATH:spark-3.3.4-bin-hadoop3/bin
 ```
 
 Follow the instructions given on [Assignment Page](https://pages.cs.wisc.edu/~shivaram/cs744-sp24/assignment1.html)

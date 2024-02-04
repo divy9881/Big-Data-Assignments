@@ -1,6 +1,6 @@
+import sys
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
-import sys
 
 def generate_sorted_data(input_path, output_path):
     data = spark.read.csv(input_path, header=True, inferSchema=True)
@@ -11,6 +11,7 @@ def generate_sorted_data(input_path, output_path):
     sorted_data.write.csv(output_path, header=True)
 
 if __name__ == "__main__":
+    print(sys.version)
     spark = SparkSession.builder \
         .appName("Big-Data-Assignment-1") \
         .config("spark.driver.memory", "30g") \
