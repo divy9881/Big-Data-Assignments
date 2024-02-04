@@ -2,12 +2,19 @@ import sys
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession
 
+lookup = dict()
+
+def assign_ranks(pair):    
+    if pair[0] not in lookup:
+        lookup[pair[0]] = True
+        return (pair[0], 1.0)
+
 def pagerank(spark, input_file_path):
     df = sc.textFile(input_file_path)
     
     links = df.map(lambda line: tuple(line.split("\t"))).filter(lambda link: not link[0].startswith('#'))
 
-    ranks = links.map(lambda pair: (pair[0], 1.0))
+    ranks = links.map(assign_ranks)
     ranks = ranks.collect()
     i = 0
     while i < 10:
