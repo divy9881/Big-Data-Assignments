@@ -23,11 +23,22 @@ def pagerank(spark, input_file_path):
     links = df.flatMap(filter_lines)
 
     ranks = links.flatMap(assign_ranks)
+    print(ranks.count())
 
-    for iteration in range(10):
-        contributions = links.join(ranks).flatMap(
+    for iteration in range(1):
+        links_ranks = links.join(ranks)
+        links_r = links_ranks.collect()
+        i = 0
+        while i < 10:
+            print(links_r[i])
+            i += 1
+        contributions = links_ranks.flatMap(
             lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
         
+        contributions_r = contributions.collect()
+        while i < 10:
+            print(contributions_r[i])
+            i += 1
         ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
     final_ranks = ranks.collect()
