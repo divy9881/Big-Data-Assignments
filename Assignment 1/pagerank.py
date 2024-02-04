@@ -7,7 +7,7 @@ def pagerank(spark, input_file_path):
     links = df.rdd.map(lambda row: (row[0], row[1]))
 
     ranks = links.map(lambda pair: (pair[0], 1.0))
-    ranks.show()
+    ranks.foreach(print)
     # ranks = dict()
     # for link in links:
     #     if link[0] not in ranks:
