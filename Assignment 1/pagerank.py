@@ -7,7 +7,9 @@ lookup = dict()
 def assign_ranks(pair):    
     if pair[0] not in lookup:
         lookup[pair[0]] = True
-        return (pair[0], 1.0)
+        return [(pair[0], 1.0)]
+    else:
+        return []
 
 def pagerank(spark, input_file_path):
     df = sc.textFile(input_file_path)
