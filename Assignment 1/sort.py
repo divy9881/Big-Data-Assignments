@@ -9,7 +9,7 @@ def generate_sorted_data(input_path, output_path):
     sorted_data = data.orderBy(col("cca2"), col("timestamp"))
     sorted_data.show()
 
-    sorted_data.coalesce(1).mode('overwrite').write.csv(output_path, header=True)
+    sorted_data.coalesce(1).write.mode('overwrite').csv(output_path, header=True)
 
 if __name__ == "__main__":
     print(sys.version)
