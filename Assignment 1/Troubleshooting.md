@@ -13,4 +13,23 @@ export PATH=$PATH:hadoop-3.3.6/sbin
 export PATH=$PATH:spark-3.3.4-bin-hadoop3/bin
 ```
 
+### Install dep to a particular python version
+```
+python3.7 -m pip install pyspark
+python3.7 -m pyspark
+```
+
+### Set default Python version
+```
+sudo update-alternatives --config python
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7.5 1
+sudo update-alternatives --config python
+sudo update-alternatives --set python /usr/bin/python3.6
+```
+
+### Solve bad magic number issue
+```
+find . -name '*.pyc' -delete
+```
+
 Follow the instructions given on [Assignment Page](https://pages.cs.wisc.edu/~shivaram/cs744-sp24/assignment1.html)
