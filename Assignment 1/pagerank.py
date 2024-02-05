@@ -8,7 +8,7 @@ def filter_lines(line):
     if line.startswith("#"):
         return []
     else:
-        return [tuple(line.split("\t"))]
+        return [tuple(line.split("\t", 1))]
     
 def assign_ranks(pair):    
     if pair[0] not in lookup:
