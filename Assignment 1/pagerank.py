@@ -65,7 +65,7 @@ if __name__ == "__main__":
                             .set("spark.executor.memory", "30g") \
                             .set("spark.executor.cores", "5") \
                             .set("spark.executor.cpus", "1") \
-                            .set("spark.local.dir", "/mnt") \
+                            .set("spark.local.dir", "/mnt/data") \
 
     sc = SparkContext(conf=conf)
     spark = SparkSession(sc)
