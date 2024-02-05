@@ -10,7 +10,7 @@ def filter_lines(line):
     else:
         return [tuple(line.split("\t", 1))]
     
-def assign_ranks(pair):    
+def assign_ranks(pair):
     if pair[0] not in lookup:
         lookup[pair[0]] = True
         return [(pair[0], 1.0)]
@@ -54,7 +54,6 @@ def pagerank(spark, input_file_path):
     for page, rank in final_ranks:
         f.write("Page: {page}, Rank: {rank} \n".format(page=page, rank=rank))
     f.close()
-    
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -65,7 +64,8 @@ if __name__ == "__main__":
                             .set("spark.driver.memory", "30g") \
                             .set("spark.executor.memory", "30g") \
                             .set("spark.executor.cores", "5") \
-                            .set("spark.executor.cpus", "1")
+                            .set("spark.executor.cpus", "1") \
+                            .set("spark.local.dir", "/mnt/data") \
 
     sc = SparkContext(conf=conf)
     spark = SparkSession(sc)
