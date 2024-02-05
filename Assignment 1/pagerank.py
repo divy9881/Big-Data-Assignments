@@ -23,30 +23,38 @@ def pagerank(spark, input_file_path):
     links = df.flatMap(filter_lines)
 
     ranks = links.flatMap(assign_ranks)
-    print(ranks.count())
+
+    f = open("counts.txt", "w+")
+    f.write(str(ranks.count()))
+    f.close()
 
     links = links.groupByKey().mapValues(list)
 
     for iteration in range(1):
         links_ranks = links.join(ranks)
 
-        links_r = links_ranks.top(10)
+        links_r = links_ranks.top(100)
+        f = open("links.txt", "w+")
         for l in links_r:
-            print(l)
+            f.write("{} \n".format(str(l)))
+        f.close()
 
-        contributions = links_ranks.flatMap(
-            lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
+        contributions = links_ranks.flatMap(lambda page_links_rank: [(link, page_links_rank[1][1] / len(page_links_rank[1][0])) for link in page_links_rank[1][0]])
         
-        # contributions_r = contributions.collect()
-        # i = 0
-        # while i < 10:
-        #     print(contributions_r[i])
-        #     i += 1
+        contributions_r = contributions.top(100)
+        f = open("contributions.txt", "w+")
+        for l in contributions_r:
+            f.write("{} \n".format(str(l)))
+        f.close()
+
         ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
     final_ranks = ranks.collect()
+    f = open("final_ranks.txt", "w+")
     for page, rank in final_ranks:
-        print(f"Page: {page}, Rank: {rank}")
+        f.write("Page: {page}, Rank: {rank} \n".format(page=page, rank=rank))
+    f.close()
+    
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
