@@ -32,4 +32,10 @@ sudo update-alternatives --set python /usr/bin/python3.6
 find . -name '*.pyc' -delete
 ```
 
+### Workaround for non-routable IPs
+```
+$ ssh -D 1337 -q -C -N dspatel6@c220g5-111206vm-1.wisc.cloudlab.us
+# And then create a Manual Proxy SOCK 5 Entry for localhost:1337 in browser
+```
+
 Follow the instructions given on [Assignment Page](https://pages.cs.wisc.edu/~shivaram/cs744-sp24/assignment1.html)
