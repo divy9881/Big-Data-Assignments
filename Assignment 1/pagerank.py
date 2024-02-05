@@ -30,7 +30,7 @@ def pagerank(spark, input_file_path):
 
     links = links.groupByKey().mapValues(list)
 
-    for iteration in range(2):
+    for iteration in range(10):
         links_ranks = links.join(ranks)
 
         links_r = links_ranks.top(100)
