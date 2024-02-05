@@ -49,11 +49,11 @@ def pagerank(spark, input_file_path):
 
         ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
 
-    # final_ranks = ranks.collect()
-    # f = open("final_ranks.txt", "w+")
-    # for page, rank in final_ranks:
-    #     f.write("Page: {page}, Rank: {rank} \n".format(page=page, rank=rank))
-    # f.close()
+    final_ranks = ranks.top(10000)
+    f = open("final_ranks.txt", "w+")
+    for page, rank in final_ranks:
+        f.write("Page: {page}, Rank: {rank} \n".format(page=page, rank=rank))
+    f.close()
     
 
 if __name__ == "__main__":
