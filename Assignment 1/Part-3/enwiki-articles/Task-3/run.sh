@@ -8,8 +8,8 @@ hdfs dfs -mkdir /part-3
 hdfs dfs -mkdir /part-3/enwiki
 hdfs dfs -put /proj/uwmadison744-s24-PG0/data-part3/enwiki-pages-articles/* /part-3/enwiki/
 # Following Spark job persists all the RDDs in-memory
-$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* persist-all
+$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/Part-3/enwiki-articles/Task-3/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* persist-all
 # Following Spark job persists only the adjacency list RDD in-memory
-$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* persist-adj
+$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/Part-3/enwiki-articles/Task-3/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* persist-adj
 # Following Spark job does not persist any RDDs
-$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* no-persist
+$SPARK_HOME/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/Part-3/enwiki-articles/Task-3/pagerank.py hdfs://10.10.1.1:9000/part-3/enwiki/* no-persist
