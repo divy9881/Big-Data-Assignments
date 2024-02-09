@@ -47,18 +47,18 @@ def assign_ranks(pair):
     Args:
         input_file_path (str): Path to the input file containing edges of the webgraph
 """
-def pagerank(input_file_path):
+def pagerank(input_file_path, partitions):
     # Read input file as an RDD of lines
-    data_frame = spark_context.textFile(input_file_path)
+    data_frame = spark_context.textFile(input_file_path).repartition(partitions)
     
     # FlatMap to filter out comments and split each line into a tuple of nodes
     edges = data_frame.flatMap(filter_lines)
 
     # FlatMap to assign an initial Pagerank of 1.0 to each node
-    ranks = edges.flatMap(assign_ranks)
+    ranks = edges.flatMap(assign_ranks).repartition(partitions)
 
     # Group links by node and convert to an adjacency list
-    adjacency_list = edges.groupByKey().mapValues(list)
+    adjacency_list = edges.groupByKey().mapValues(list).repartition(partitions)
 
     # Run Pagerank algorithm for 10 iterations
     for iteration in range(10):
@@ -69,7 +69,7 @@ def pagerank(input_file_path):
         contributions = list_ranks.flatMap(lambda list_rank: [(node, list_rank[1][1] / len(list_rank[1][0])) for node in list_rank[1][0]])
 
         # Aggregate contributions per node and then compute the new Pagerank for that node
-        ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
+        ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank).repartition(partitions)
 
     # Get the top 10000 pages by final Pagerank and write to file
     # final_ranks = ranks.top(10000)
@@ -80,8 +80,8 @@ def pagerank(input_file_path):
 
 if __name__ == "__main__":
     # Proper usage check
-    if len(sys.argv) != 2:
-        print("Usage: spark-submit <script.py> <input_path>")
+    if len(sys.argv) != 3:
+        print("Usage: spark-submit <script.py> <input_path> <partitions>")
         sys.exit(1)
 
     # Configure Spark context
@@ -98,9 +98,12 @@ if __name__ == "__main__":
 
     # Extract path to input file from command-line arguments
     input_path = sys.argv[1]
+
+    # Extract Number of Partitions from command-line arguments
+    partitions = int(sys.argv[2])
     
     # Compute Pageranks
-    pagerank(input_path)
+    pagerank(input_path, partitions)
 
     # Stop Spark application
     spark_context.stop()
