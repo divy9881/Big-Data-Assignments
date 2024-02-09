@@ -56,20 +56,40 @@ def pagerank(input_file_path):
 
     # FlatMap to assign an initial Pagerank of 1.0 to each node
     ranks = edges.flatMap(assign_ranks)
+    
+    # Persist ranks RDD in-memory
+    if persist_option == "persist-all":
+        ranks.persist()
 
     # Group links by node and convert to an adjacency list
     adjacency_list = edges.groupByKey().mapValues(list)
+
+    # Persist adjacency list RDD in-memory
+    if persist_option == "persist-all" or persist_option == "persist-adj":
+        adjacency_list.persist()
 
     # Run Pagerank algorithm for 10 iterations
     for iteration in range(10):
         # Join links with current Pageranks
         list_ranks = adjacency_list.join(ranks)
 
+        # Persist joined RDD for adjacency_list and ranks in-memory
+        if persist_option == "persist-all":
+            list_ranks.persist()
+
         # Compute contributions of each node to its neighbours' Pageranks
         contributions = list_ranks.flatMap(lambda list_rank: [(node, list_rank[1][1] / len(list_rank[1][0])) for node in list_rank[1][0]])
 
+        # Persist contributions RDD in-memory
+        if persist_option == "persist-all":
+            contributions.persist()
+
         # Aggregate contributions per node and then compute the new Pagerank for that node
         ranks = contributions.reduceByKey(lambda x, y: x + y).mapValues(lambda rank: 0.15 + 0.85 * rank)
+        
+        # Persist ranks RDD in-memory
+        if persist_option == "persist-all":
+            ranks.persist()
 
     # Get the top 10000 pages by final Pagerank and write to file
     # final_ranks = ranks.top(10000)
@@ -80,7 +100,7 @@ def pagerank(input_file_path):
 
 if __name__ == "__main__":
     # Proper usage check
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print("Usage: spark-submit <script.py> <input_path>")
         sys.exit(1)
 
@@ -98,9 +118,10 @@ if __name__ == "__main__":
 
     # Extract path to input file from command-line arguments
     input_path = sys.argv[1]
+    persist_option = sys.argv[2]
     
     # Compute Pageranks
-    pagerank(input_path)
+    pagerank(input_path, persist_option)
 
     # Stop Spark application
     spark_context.stop()
