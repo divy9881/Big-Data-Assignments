@@ -1,3 +1,16 @@
+# Assignment-1
+
+## Directory tree structure
+- `./Part-2`
+- `./Part-3/web-BerkStan`
+- `./Part-3/enwiki-articles`
+- `./Part-3/enwiki-articles/Task-0`
+- `./Part-3/enwiki-articles/Task-1`
+- `./Part-3/enwiki-articles/Task-2`
+- `./Part-3/enwiki-articles/Task-3`
+- `./Troubleshooting.md`
+
+## Part-2
 ### Run sort.py Pyspark script
 ```
 $ git clone https://github.com/divy9881/big-data-assignments
@@ -6,6 +19,7 @@ $ hdfs dfs -copyFromLocal ./export.csv /export.csv
 $ ~/spark-3.3.4-bin-hadoop3/bin/spark-submit --master=spark://10.10.1.1:7077 ./Big-Data-Assignments/Assignment\ 1/sort.py hdfs://10.10.1.1:9000/export.csv hdfs://10.10.1.1:9000/final-result
 ```
 
+## Part-3
 ### Run PageRank on web-BerkStan data
 ```
 $ git clone https://github.com/divy9881/big-data-assignments
