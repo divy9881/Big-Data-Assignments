@@ -1,3 +1,7 @@
-*/*.gz
-*/*_batch_*
-*/*.meta
+*.gz
+*_batch_*
+*.meta
+*.pyc
+*.html
+*batch
+*-*.pyc
