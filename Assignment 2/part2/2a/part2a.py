@@ -13,8 +13,7 @@ device = "cpu"
 torch.set_num_threads(4)
 
 batch_size = 64 
-rank_of_node = 0
-def train_model(model, train_loader, optimizer, criterion, epoch):
+def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
     """
     model (torch.nn.module): The model created to train
     train_loader (pytorch data loader): Training data loader
@@ -52,7 +51,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
                 dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
             else:
                 dist.scatter(p.grad,  group=group, src=0, async_op=False)
-            print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
+            #print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
@@ -62,7 +61,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
 
     return None
 
-def test_model(model, test_loader, criterion):
+def test_model(model, test_loader, criterion, rank_of_node):
     print("inside test")
     model.eval()
     test_loss = 0
@@ -88,7 +87,6 @@ def main():
     parser.add_argument('--num-nodes', dest='size', type=int, help='4')
     parser.add_argument('--rank', dest='rank', type=int, help='0')
     args = parser.parse_args()
-    global rank_of_node 
     rank_of_node = args.rank
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
@@ -137,8 +135,8 @@ def main():
                           momentum=0.9, weight_decay=0.0001)
     # running training for one epoch
     for epoch in range(1):
-        train_model(model, train_loader, optimizer, training_criterion, epoch)
-        test_model(model, test_loader, training_criterion)
+        train_model(model, train_loader, optimizer, training_criterion, epoch, rank_of_node)
+        test_model(model, test_loader, training_criterion, rank_of_node)
 
 if __name__ == "__main__":
     main()
