@@ -37,10 +37,11 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
         group = dist.new_group([0, 1, 2, 3])
         for p in model.parameters():
             grad_list = [torch.zeros_like(p.grad) for _ in range(4)]
+            print('Rank of node', rank_of_node)
             if rank_of_node == 0:
                 dist.gather(p.grad, grad_list, group=group, async_op=False)
             else:
-                dist.gather(p.grad, [], group=group, async_op=False)
+                dist.gather(p.grad,  group=group, async_op=False)
 
             grad_sum = torch.zeros_like(p.grad)
             for i in range(4):
@@ -50,7 +51,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
             if rank_of_node == 0:
                 dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
             else:
-                dist.scatter(p.grad, [], group=group, src=0, async_op=False)
+                dist.scatter(p.grad,  group=group, src=0, async_op=False)
             print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
         if batch_idx % 20 == 0:
