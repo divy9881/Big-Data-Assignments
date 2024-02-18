@@ -88,6 +88,7 @@ def main():
     parser.add_argument('--num-nodes', dest='size', type=int, help='4')
     parser.add_argument('--rank', dest='rank', type=int, help='0')
     args = parser.parse_args()
+    global rank_of_node 
     rank_of_node = args.rank
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
