@@ -24,6 +24,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
 
     # remember to exit the train loop at end of the epoch
     print("inside train")
+    group = dist.new_group([0, 1, 2, 3])
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
         if batch_idx == 1:
@@ -33,22 +34,18 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
         output = model(data)
         train_loss = criterion(output, target)
         train_loss.backward()
-        group = dist.new_group([0, 1, 2, 3])
         for p in model.parameters():
             grad_list = [torch.zeros_like(p.grad) for _ in range(4)]
             if rank_of_node == 0:
                 dist.gather(p.grad, grad_list, group=group, async_op=False)
-            else:
-                dist.gather(p.grad,  group=group, async_op=False)
-
-            grad_sum = torch.zeros_like(p.grad)
-            for i in range(4):
-                grad_sum += grad_list[i]
-            grad_mean = grad_sum / 4
-            scatter_list = [grad_mean for _ in range(4)]
-            if rank_of_node == 0:
+                grad_sum = torch.zeros_like(p.grad)
+                for i in range(4):
+                    grad_sum += grad_list[i]
+                grad_mean = grad_sum / 4
+                scatter_list = [grad_mean for _ in range(4)]
                 dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
             else:
+                dist.gather(p.grad,  group=group, async_op=False)
                 dist.scatter(p.grad,  group=group, src=0, async_op=False)
             #print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
@@ -93,7 +90,8 @@ def main():
     print(args.rank)
     torch.manual_seed(744)
     np.random.seed(744)
-
+    # https://github.com/pytorch/pytorch/issues/11201
+    # ulimit -n 65000 -> Increases limit of number of sockets to be opened
     torch.multiprocessing.set_sharing_strategy('file_system')
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
