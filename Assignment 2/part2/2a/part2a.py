@@ -8,7 +8,7 @@ import model as mdl
 import argparse
 import torch.distributed as dist
 from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.multiprocessing
 device = "cpu"
 torch.set_num_threads(4)
 
@@ -94,6 +94,7 @@ def main():
     torch.manual_seed(744)
     np.random.seed(744)
 
+    torch.multiprocessing.set_sharing_strategy('file_system')
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
