@@ -36,7 +36,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
         group = dist.new_group([0, 1, 2, 3])
         for p in model.parameters():
             grad_list = [torch.zeros_like(p.grad) for _ in range(4)]
-            print('Rank of node', rank_of_node)
             if rank_of_node == 0:
                 dist.gather(p.grad, grad_list, group=group, async_op=False)
             else:
