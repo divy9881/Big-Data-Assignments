@@ -13,6 +13,7 @@ device = "cpu"
 torch.set_num_threads(4)
 
 batch_size = 64 
+rank_of_node = 0
 def train_model(model, train_loader, optimizer, criterion, epoch):
     """
     model (torch.nn.module): The model created to train
@@ -36,14 +37,15 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
         group = dist.new_group([0, 1, 2, 3])
         for p in model.parameters():
             grad_list = [torch.zeros_like(p.grad) for _ in range(4)]
-            dist.gather(p.grad, grad_list, group=group, async_op=False)
-            grad_sum = torch.zeros_like(p.grad)
-            for i in range(4):
-                grad_sum += grad_list[i]
-            grad_mean = grad_sum / 4
-            scatter_list = [grad_mean for _ in range(4)]
-            dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
-            print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
+            if rank_of_node == 0:
+                dist.gather(p.grad, grad_list, group=group, async_op=False)
+                grad_sum = torch.zeros_like(p.grad)
+                for i in range(4):
+                    grad_sum += grad_list[i]
+                grad_mean = grad_sum / 4
+                scatter_list = [grad_mean for _ in range(4)]
+                dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
+                print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
@@ -79,7 +81,7 @@ def main():
     parser.add_argument('--num-nodes', dest='size', type=int, help='4')
     parser.add_argument('--rank', dest='rank', type=int, help='0')
     args = parser.parse_args()
-
+    rank_of_node = args.rank
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
     dist.init_process_group('gloo', rank=args.rank, world_size=args.size)
