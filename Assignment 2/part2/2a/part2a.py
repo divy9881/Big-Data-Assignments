@@ -33,17 +33,16 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
         output = model(data)
         train_loss = criterion(output, target)
         train_loss.backward()
+        group = dist.new_group([0, 1, 2, 3])
         for p in model.parameters():
             grad_list = [torch.zeros_like(p.grad) for _ in range(4)]
-            dist.gather(p.grad, grad_list, group=None, async_op=False)
+            dist.gather(p.grad, grad_list, group=group, async_op=False)
             grad_sum = torch.zeros_like(p.grad)
             for i in range(4):
                 grad_sum += grad_list[i]
             grad_mean = grad_sum / 4
             scatter_list = [grad_mean for _ in range(4)]
-            dist.scatter(p.grad, scatter_list, group=None, src=0, async_op=False)
-            
-            # group = dist.new_group([0, 1, 2, 3])
+            dist.scatter(p.grad, scatter_list, group=group, src=0, async_op=False)
             print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
         if batch_idx % 20 == 0:
