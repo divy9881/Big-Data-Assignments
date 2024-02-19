@@ -1,19 +1,20 @@
 import os
 import torch
 import numpy as np
-from torchvision import datasets, transforms
 import torch.optim as optim
-from datetime import datetime
 import model as mdl
 import argparse
 import torch.distributed as dist
+from datetime import datetime
+from torchvision import datasets, transforms
 from torch.utils.data.distributed import DistributedSampler
-import torch.multiprocessing
+from torch.nn.parallel import DistributedDataParallel as DDP
+
 device = "cpu"
 torch.set_num_threads(4)
+batch_size = 64
 
-batch_size = 64 
-def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
+def train_model(model, train_loader, optimizer, criterion, epoch):
     """
     model (torch.nn.module): The model created to train
     train_loader (pytorch data loader): Training data loader
@@ -24,7 +25,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
 
     # remember to exit the train loop at end of the epoch
     print("inside train")
-    group = dist.new_group([0, 1, 2, 3])
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
         if batch_idx == 1:
@@ -34,10 +34,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
         output = model(data)
         train_loss = criterion(output, target)
         train_loss.backward()
-        for p in model.parameters():
-            p.grad = p.grad / 4 
-            dist.all_reduce(p.grad, op=dist.reduce_op.SUM, group=group, async_op=False)
-            #print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
@@ -47,7 +43,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
 
     return None
 
-def test_model(model, test_loader, criterion, rank_of_node):
+def test_model(model, test_loader, criterion):
     print("inside test")
     model.eval()
     test_loss = 0
@@ -63,8 +59,7 @@ def test_model(model, test_loader, criterion, rank_of_node):
     test_loss /= len(test_loader)
     print('Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset)))
-            
+            100. * correct / len(test_loader.dataset)))  
 
 def main():
     print("inside main")
@@ -73,16 +68,14 @@ def main():
     parser.add_argument('--num-nodes', dest='size', type=int, help='4')
     parser.add_argument('--rank', dest='rank', type=int, help='0')
     args = parser.parse_args()
-    rank_of_node = args.rank
+
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
     dist.init_process_group('gloo', rank=args.rank, world_size=args.size)
     print(args.rank)
     torch.manual_seed(744)
     np.random.seed(744)
-    # https://github.com/pytorch/pytorch/issues/11201
-    # ulimit -n 65000 -> Increases limit of number of sockets to be opened
-    torch.multiprocessing.set_sharing_strategy('file_system')
+
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
@@ -116,15 +109,15 @@ def main():
 
     model = mdl.VGG11()
     model.to(device)
-   
-    #model = DDP(model)
-    
+    print("before DDP")
+    model = DDP(model)
+    print("After DDP")
     optimizer = optim.SGD(model.parameters(), lr=0.1,
                           momentum=0.9, weight_decay=0.0001)
     # running training for one epoch
     for epoch in range(1):
-        train_model(model, train_loader, optimizer, training_criterion, epoch, rank_of_node)
-        test_model(model, test_loader, training_criterion, rank_of_node)
+        train_model(model, train_loader, optimizer, training_criterion, epoch)
+        test_model(model, test_loader, training_criterion)
 
 if __name__ == "__main__":
     main()

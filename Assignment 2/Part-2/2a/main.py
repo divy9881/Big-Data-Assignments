@@ -1,14 +1,15 @@
 import os
 import torch
 import numpy as np
-from torchvision import datasets, transforms
 import torch.optim as optim
-from datetime import datetime
 import model as mdl
 import argparse
 import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
 import torch.multiprocessing
+from datetime import datetime
+from torchvision import datasets, transforms
+from torch.utils.data.distributed import DistributedSampler
+
 device = "cpu"
 torch.set_num_threads(4)
 

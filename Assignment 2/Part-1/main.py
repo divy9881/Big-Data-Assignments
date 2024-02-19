@@ -1,18 +1,13 @@
-import os
 import torch
-import numpy as np
-from torchvision import datasets, transforms
 import torch.optim as optim
-from datetime import datetime
 import model as mdl
-import argparse
-import torch.distributed as dist
-from torch.utils.data.distributed import DistributedSampler
-from torch.nn.parallel import DistributedDataParallel as DDP
+from datetime import datetime
+from torchvision import datasets, transforms
+
 device = "cpu"
 torch.set_num_threads(4)
 
-batch_size = 64 
+batch_size = 256 # batch for one node
 def train_model(model, train_loader, optimizer, criterion, epoch):
     """
     model (torch.nn.module): The model created to train
@@ -23,7 +18,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
     """
 
     # remember to exit the train loop at end of the epoch
-    print("inside train")
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
         if batch_idx == 1:
@@ -36,14 +30,13 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
-        if batch_idx == 195:
+        if batch_idx == 39:
             endtime = datetime.now()
-            print("Average time: ", (endtime - starttime).total_seconds()/195)
+            #print("Average time: ", (endtime - starttime).total_seconds()/39)
 
     return None
 
 def test_model(model, test_loader, criterion):
-    print("inside test")
     model.eval()
     test_loss = 0
     correct = 0
@@ -62,20 +55,6 @@ def test_model(model, test_loader, criterion):
             
 
 def main():
-    print("inside main")
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--master-ip', dest='master_ip', type=str, help='172.18.0.2')
-    parser.add_argument('--num-nodes', dest='size', type=int, help='4')
-    parser.add_argument('--rank', dest='rank', type=int, help='0')
-    args = parser.parse_args()
-
-    os.environ['MASTER_ADDR'] = args.master_ip
-    os.environ['MASTER_PORT'] = '6585'
-    dist.init_process_group('gloo', rank=args.rank, world_size=args.size)
-    print(args.rank)
-    torch.manual_seed(744)
-    np.random.seed(744)
-
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
@@ -90,12 +69,11 @@ def main():
             normalize])
     training_set = datasets.CIFAR10(root="./data", train=True,
                                                 download=True, transform=transform_train)
-    
-    sampler_d = DistributedSampler(training_set) if torch.distributed.is_available() else None
     train_loader = torch.utils.data.DataLoader(training_set,
                                                     num_workers=2,
                                                     batch_size=batch_size,
-                                                    sampler=sampler_d,
+                                                    sampler=None,
+                                                    shuffle=True,
                                                     pin_memory=True)
     test_set = datasets.CIFAR10(root="./data", train=False,
                                 download=True, transform=transform_test)
@@ -109,9 +87,6 @@ def main():
 
     model = mdl.VGG11()
     model.to(device)
-    print("before DDP")
-    model = DDP(model)
-    print("After DDP")
     optimizer = optim.SGD(model.parameters(), lr=0.1,
                           momentum=0.9, weight_decay=0.0001)
     # running training for one epoch
