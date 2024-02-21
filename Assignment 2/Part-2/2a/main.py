@@ -52,9 +52,9 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
-        if batch_idx == 195:
+        if batch_idx == 39:
             endtime = datetime.now()
-            print("Average time: ", (endtime - starttime).total_seconds()/195)
+            print("Average Iteration time: ", (endtime - starttime).total_seconds()/39)
 
     return None
 
