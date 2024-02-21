@@ -3,6 +3,7 @@ import torch.optim as optim
 import model as mdl
 from datetime import datetime
 from torchvision import datasets, transforms
+import numpy as np
 
 device = "cpu"
 torch.set_num_threads(4)
@@ -55,6 +56,8 @@ def test_model(model, test_loader, criterion):
             
 
 def main():
+    torch.manual_seed(744)
+    np.random.seed(744)
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([
