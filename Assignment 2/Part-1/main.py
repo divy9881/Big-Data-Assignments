@@ -32,7 +32,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
         if batch_idx == 39:
             endtime = datetime.now()
-            #print("Average time: ", (endtime - starttime).total_seconds()/39)
+            print("Average Iteration time: ", (endtime - starttime).total_seconds()/39)
 
     return None
 
