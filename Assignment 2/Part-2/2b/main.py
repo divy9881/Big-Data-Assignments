@@ -13,7 +13,7 @@ from torch.utils.data.distributed import DistributedSampler
 device = "cpu"
 torch.set_num_threads(4)
 
-batch_size = 64 
+batch_size = 64 # batch size on one machine
 def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
     """
     model (torch.nn.module): The model created to train
@@ -28,20 +28,27 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
     group = dist.new_group([0, 1, 2, 3])
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
+        # starting the time after the first iteration.
         if batch_idx == 1:
             starttime = datetime.now()
         data, target = data.to(device), target.to(device)
+        # resetting the gradients
         optimizer.zero_grad()
+        # forward pass 
         output = model(data)
         train_loss = criterion(output, target)
+        # backward pass
         train_loss.backward()
+        # calculating average gradient using AllReduce
         for p in model.parameters():
             p.grad = p.grad / 4 
             dist.all_reduce(p.grad, op=dist.reduce_op.SUM, group=group, async_op=False)
             #print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
+        # updating gradients
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
+        # calculating average iteration time for first 40 iterations
         if batch_idx == 39:
             endtime = datetime.now()
             print("Average Iteration time: ", (endtime - starttime).total_seconds()/39)
@@ -69,21 +76,32 @@ def test_model(model, test_loader, criterion, rank_of_node):
 
 def main():
     print("inside main")
+
+    # parsing the command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--master-ip', dest='master_ip', type=str, help='172.18.0.2')
-    parser.add_argument('--num-nodes', dest='size', type=int, help='4')
-    parser.add_argument('--rank', dest='rank', type=int, help='0')
+    parser.add_argument('--master-ip', dest='master_ip', type=str)
+    parser.add_argument('--num-nodes', dest='size', type=int)
+    parser.add_argument('--rank', dest='rank', type=int)
     args = parser.parse_args()
+
     rank_of_node = args.rank
+    
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
+    
+    # setting gloo backend
     dist.init_process_group('gloo', rank=args.rank, world_size=args.size)
+    
     print(args.rank)
+    
+    # setting seed for consistent random results
     torch.manual_seed(744)
     np.random.seed(744)
+    
     # https://github.com/pytorch/pytorch/issues/11201
     # ulimit -n 65000 -> Increases limit of number of sockets to be opened
     torch.multiprocessing.set_sharing_strategy('file_system')
+
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
                                 std=[x/255.0 for x in [63.0, 62.1, 66.7]])
     transform_train = transforms.Compose([

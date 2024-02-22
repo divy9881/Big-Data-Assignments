@@ -12,7 +12,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 
 device = "cpu"
 torch.set_num_threads(4)
-batch_size = 64
+batch_size = 64 # batch size on one machine
 
 def train_model(model, train_loader, optimizer, criterion, epoch):
     """
@@ -27,16 +27,22 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
     print("inside train")
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
+        # starting the time after the first iteration.
         if batch_idx == 1:
             starttime = datetime.now()
         data, target = data.to(device), target.to(device)
+        # resetting the gradients
         optimizer.zero_grad()
+        # forward pass 
         output = model(data)
         train_loss = criterion(output, target)
+        # backward pass
         train_loss.backward()
+        # updating gradients
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
+        # calculating average iteration time for first 40 iterations
         if batch_idx == 39:
             endtime = datetime.now()
             print("Average Iteration time: ", (endtime - starttime).total_seconds()/39)
@@ -63,16 +69,22 @@ def test_model(model, test_loader, criterion):
 
 def main():
     print("inside main")
+
+    # parsing the command line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('--master-ip', dest='master_ip', type=str, help='172.18.0.2')
-    parser.add_argument('--num-nodes', dest='size', type=int, help='4')
-    parser.add_argument('--rank', dest='rank', type=int, help='0')
+    parser.add_argument('--master-ip', dest='master_ip', type=str)
+    parser.add_argument('--num-nodes', dest='size', type=int)
+    parser.add_argument('--rank', dest='rank', type=int)
     args = parser.parse_args()
 
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
+
+    # using gloo backend
     dist.init_process_group('gloo', rank=args.rank, world_size=args.size)
     print(args.rank)
+
+    # setting seed for consistent random results
     torch.manual_seed(744)
     np.random.seed(744)
 
@@ -109,9 +121,12 @@ def main():
 
     model = mdl.VGG11()
     model.to(device)
+
+    # Using PyTorch's DDP Module
     print("before DDP")
     model = DDP(model)
     print("After DDP")
+
     optimizer = optim.SGD(model.parameters(), lr=0.1,
                           momentum=0.9, weight_decay=0.0001)
     # running training for one epoch

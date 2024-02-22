@@ -21,16 +21,22 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
     # remember to exit the train loop at end of the epoch
     for batch_idx, (data, target) in enumerate(train_loader):
         # Your code goes here!
+        # starting the time after the first iteration.
         if batch_idx == 1:
             starttime = datetime.now()
         data, target = data.to(device), target.to(device)
+        # resetting the gradients
         optimizer.zero_grad()
+        # forward pass 
         output = model(data)
         train_loss = criterion(output, target)
+        # backward pass
         train_loss.backward()
+        # updating gradients
         optimizer.step()
         if batch_idx % 20 == 0:
             print("Iteration Number: ", batch_idx, ", loss: ", train_loss.item())
+        # calculating average iteration time for first 40 iterations
         if batch_idx == 39:
             endtime = datetime.now()
             print("Average Iteration time: ", (endtime - starttime).total_seconds()/39)
@@ -56,6 +62,7 @@ def test_model(model, test_loader, criterion):
             
 
 def main():
+    # setting seed for consistent random results
     torch.manual_seed(744)
     np.random.seed(744)
     normalize = transforms.Normalize(mean=[x/255.0 for x in [125.3, 123.0, 113.9]],
