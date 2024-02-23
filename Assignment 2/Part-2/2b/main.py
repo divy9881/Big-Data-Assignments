@@ -14,13 +14,15 @@ device = "cpu"
 torch.set_num_threads(4)
 
 batch_size = 64 # batch size on one machine
-def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
+def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node, num_nodes):
     """
     model (torch.nn.module): The model created to train
     train_loader (pytorch data loader): Training data loader
     optimizer (optimizer.*): A instance of some sort of optimizer, usually SGD
     criterion (nn.CrossEntropyLoss) : Loss function used to train the network
     epoch (int): Current epoch number
+    rank_of_node (int): Rank of current node
+    num_nodes (int): Total number of nodes
     """
 
     # remember to exit the train loop at end of the epoch
@@ -41,7 +43,7 @@ def train_model(model, train_loader, optimizer, criterion, epoch, rank_of_node):
         train_loss.backward()
         # calculating average gradient using AllReduce
         for p in model.parameters():
-            p.grad = p.grad / 4 
+            p.grad = p.grad / num_nodes
             dist.all_reduce(p.grad, op=dist.reduce_op.SUM, group=group, async_op=False)
             #print('Result gathered',dist.lst_of_gradients,type(dist.lst_of_gradients))
         # updating gradients
@@ -85,6 +87,7 @@ def main():
     args = parser.parse_args()
 
     rank_of_node = args.rank
+    num_nodes = args.size
     
     os.environ['MASTER_ADDR'] = args.master_ip
     os.environ['MASTER_PORT'] = '6585'
@@ -142,7 +145,7 @@ def main():
                           momentum=0.9, weight_decay=0.0001)
     # running training for one epoch
     for epoch in range(1):
-        train_model(model, train_loader, optimizer, training_criterion, epoch, rank_of_node)
+        train_model(model, train_loader, optimizer, training_criterion, epoch, rank_of_node, num_nodes)
         test_model(model, test_loader, training_criterion, rank_of_node)
 
 if __name__ == "__main__":
