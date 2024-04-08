@@ -1,0 +1,25 @@
+ Performance counter stats for 'python3 you_token_to_me.py':
+
+       803,608,844      instructions                                                
+         1,633,343      cache-misses                                                
+
+       0.252545132 seconds time elapsed
+
+       0.473764000 seconds user
+       0.328351000 seconds sys
+
+ Performance counter stats for 'python3 tik_token.py':
+
+     3,429,575,479      instructions                                                
+         1,500,932      cache-misses                                                
+
+       0.699908255 seconds time elapsed
+
+       0.635507000 seconds user
+       0.064355000 seconds sys
+
+
+Command : sudo perf stat -v -e instructions,cache-misses,L1-dcache-load-misses,L1-dcache-store-misses,L1-dcache-prefetch-misses,L2-dcache-load-misses,L2-dcache-store-misses,L2-dcache-prefetch-misses,LLC-load-misses,LLC-store-misses,LLC-prefetch-misses,page-faults,mem-loads,mem-stores,dTLB-load-misses,dTLB-store-misses,iTLB-load-misses python3 tik_token.py
+
+L1-dcache-load-misses,L1-dcache-store-misses,L1-dcache-prefetch-misses,L2-dcache-load-misses,L2-dcache-store-misses,L2-dcache-prefetch-misses,LLC-load-misses,LLC-store-misses,LLC-prefetch-misses,page-faults,mem-loads,mem-stores,dTLB-load-misses,dTLB-store-misses,iTLB-load-misses
+
