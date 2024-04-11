@@ -23,3 +23,25 @@ Command : sudo perf stat -v -e instructions,cache-misses,L1-dcache-load-misses,L
 
 L1-dcache-load-misses,L1-dcache-store-misses,L1-dcache-prefetch-misses,L2-dcache-load-misses,L2-dcache-store-misses,L2-dcache-prefetch-misses,LLC-load-misses,LLC-store-misses,LLC-prefetch-misses,page-faults,mem-loads,mem-stores,dTLB-load-misses,dTLB-store-misses,iTLB-load-misses
 
+instructions: 3412131964 626733471 355271412
+cache-misses: 1512964 626733471 447269632
+L1-dcache-load-misses: 34212172 626733471 450745254
+L1-dcache-loads: 1010638132 626733471 431448115
+LLC-load-misses: 1419867 626733471 175988217
+LLC-store-misses: 111583 626733471 176006344
+cache-references: 17926602 626733471 263997274
+
+ Performance counter stats for 'python3 tik_token.py':
+
+     3,412,131,964      instructions                                                  (56.69%)
+         1,512,964      cache-misses              #    8.440 % of all cache refs      (71.37%)
+        34,212,172      L1-dcache-load-misses     #    3.39% of all L1-dcache accesses  (71.92%)
+     1,010,638,132      L1-dcache-loads                                               (68.84%)
+         1,419,867      LLC-load-misses                                               (28.08%)
+           111,583      LLC-store-misses                                              (28.08%)
+        17,926,602      cache-references                                              (42.12%)
+
+       0.627367228 seconds time elapsed
+
+       0.571059000 seconds user
+       0.056301000 seconds sys
