@@ -3,6 +3,7 @@ import subprocess
 def calc_stats(sentences):
     results = []
 
+    # code to populate 100 results for each sentence length.
     instr_arr = ["instructions","cache-misses","cache-references","L1-dcache-load-misses","L1-dcache-loads","time","LLC-load-misses","LLC-loads"]
     for sentence in sentences:
         sentence_stat = {}
