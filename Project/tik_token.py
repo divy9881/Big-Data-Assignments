@@ -7,9 +7,16 @@ encoding = tiktoken.get_encoding("cl100k_base")
 # to convert string into a list of token integers.
 token_list = encoding.encode(sys.argv[1])
 
-print(token_list)
+# print(token_list)
+# print(len(token_list))
 
 # For single tokens, .decode_single_token_bytes() safely converts a single integer token to the bytes it represents.
-tokens = [encoding.decode_single_token_bytes(token) for token in token_list]
+# To see how tokens are generated.
+#tokens = [encoding.decode_single_token_bytes(token) for token in token_list]
 
-print(tokens)
+# file_path = "tt_tokens.txt"
+# with open(file_path, 'w') as file:
+#     for item in tokens:
+#         file.write(str(item) + '\n')
+
+# print(tokens)

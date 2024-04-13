@@ -22,5 +22,5 @@ bpe = yttm.BPE(model=model_path)
 test_text = sys.argv[1]
 
 # running tokenizer
-print(bpe.encode([test_text], output_type=yttm.OutputType.SUBWORD))
-#bpe.encode([test_text], output_type=yttm.OutputType.SUBWORD)
+#print(bpe.encode([test_text], output_type=yttm.OutputType.SUBWORD))
+bpe.encode([test_text], output_type=yttm.OutputType.SUBWORD)

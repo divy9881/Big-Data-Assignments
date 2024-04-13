@@ -1,2 +1,5 @@
 1. There was no pretrained model for you token to me.
 2. perf stat command errors out when we pass large sentences as part of the command (>16k). Therefore, planning to write to a file and then read it in tokenizer script, but it adds overhead to stats.
+
+
+1. For tik_token, when we pass hindi, russian text, we are getting unreadable byte encoding for hindi characters
