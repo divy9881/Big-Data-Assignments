@@ -46,7 +46,7 @@ def calc_stats(sentences):
         sentence_stat["length"] = sentence[1]
         results.append(sentence_stat)  
         #print(cleaned_data)
-        print(sentence_stat)
+        #print(sentence_stat)
 
     print(len(results))
 
