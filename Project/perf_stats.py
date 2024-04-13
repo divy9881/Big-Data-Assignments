@@ -2,6 +2,7 @@ import subprocess
 
 def calc_stats(sentences):
     results = []
+
     instr_arr = ["instructions","cache-misses","cache-references","L1-dcache-load-misses","L1-dcache-loads","time","LLC-load-misses","LLC-loads"]
     for sentence in sentences:
         sentence_stat = {}
@@ -26,3 +27,43 @@ def calc_stats(sentences):
         print(sentence_stat)
 
     print(len(results))
+
+    # Now, the results array is populated, now we need to calculate averages for each unique sentence length.
+    averages = []
+    average = {}
+    su = {}
+    cur_len = 1
+    count = 0
+    for result in results:
+        if cur_len != result['length']:
+            # print("sum : ")
+            # print(su)
+            # print(count)
+            for instr in instr_arr:
+                average[instr] = su[instr]/count
+            average['length'] = cur_len
+            count = 0
+            cur_len *= 2
+            averages.append(average)
+            average = {}
+            su = {}
+
+        if cur_len == result['length']:
+            for instr in instr_arr:
+                if instr in su:
+                    su[instr] += float(result[instr].replace(',', ''))
+                else:
+                    su[instr] = float(result[instr].replace(',', ''))
+            count += 1
+    
+    # calculating average for the last length.
+    for instr in instr_arr:
+        average[instr] = su[instr]/count
+    average['length'] = cur_len
+    count = 0
+    cur_len *= 2
+    averages.append(average)
+    average = {}
+    su = {}
+
+    print(averages)
