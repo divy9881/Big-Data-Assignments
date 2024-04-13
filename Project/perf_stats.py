@@ -1,4 +1,25 @@
 import subprocess
+import csv
+
+def write_to_csv(data):
+    csv_file_path = "data.csv"
+
+    # Specify the fieldnames based on the keys in your dictionaries
+    fieldnames = data[0].keys()
+
+    # Write the data to CSV
+    with open(csv_file_path, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        # Write the header
+        writer.writeheader()
+
+        # Write the data
+        for row in data:
+            writer.writerow(row)
+
+    print("CSV file has been created successfully.")
+
 
 def calc_stats(sentences):
     results = []
@@ -68,3 +89,4 @@ def calc_stats(sentences):
     su = {}
 
     print(averages)
+    write_to_csv(averages)
