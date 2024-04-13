@@ -28,7 +28,7 @@ def calc_stats(sentences):
     instr_arr = ["instructions","cache-misses","cache-references","L1-dcache-load-misses","L1-dcache-loads","time","LLC-load-misses","LLC-loads"]
     for sentence in sentences:
         sentence_stat = {}
-        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me.py", sentence[0]], capture_output = True)
+        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "tik_token.py", sentence[0]], capture_output = True)
         
         formatted_text = str(output.stderr).split(" ")
         cleaned_data = [item for item in formatted_text if item.strip()]
