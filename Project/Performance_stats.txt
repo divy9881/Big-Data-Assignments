@@ -23,6 +23,9 @@ Command : sudo perf stat -v -e instructions,cache-misses,L1-dcache-load-misses,L
 
 L1-dcache-load-misses,L1-dcache-store-misses,L1-dcache-prefetch-misses,L2-dcache-load-misses,L2-dcache-store-misses,L2-dcache-prefetch-misses,LLC-load-misses,LLC-store-misses,LLC-prefetch-misses,page-faults,mem-loads,mem-stores,dTLB-load-misses,dTLB-store-misses,iTLB-load-misses
 
+Sample command : sudo perf stat -v -e cache-misses python3 you_token_to_me.py
+
+
 instructions: 3412131964 626733471 355271412
 cache-misses: 1512964 626733471 447269632
 L1-dcache-load-misses: 34212172 626733471 450745254
@@ -45,3 +48,17 @@ cache-references: 17926602 626733471 263997274
 
        0.571059000 seconds user
        0.056301000 seconds sys
+
+
+Notes about stats : 
+cache-misses : events where it misses in all L1,L2,LLC caches.
+cache-references : events where it tried to access all 3 caches.
+cache-hits : cache-references - cache-misses
+
+L1-dcache-loads : events where it tried to access L1 cache.
+L1-dcache-load-misses : events where it couldn't find in L1.
+L1-dcache-load-hits : L1-dcache-loads - L1-dcache-load-misses
+
+LLC-load-misses : events where it couldn't find in LLC.
+LLC-loads :  events where it tried to access LLC cache.
+LLC-load-hits : LLC-loads - LLC-load-misses
