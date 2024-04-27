@@ -2,7 +2,7 @@ import subprocess
 import csv
 
 def write_to_csv(data):
-    csv_file_path = "yttm_eng_17k.csv"
+    csv_file_path = "temp_command.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -28,7 +28,12 @@ def calc_stats(sentences):
     instr_arr = ["instructions","cache-misses","cache-references","L1-dcache-load-misses","L1-dcache-loads","time","LLC-load-misses","LLC-loads"]
     for sentence in sentences:
         sentence_stat = {}
-        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me.py", sentence[0]], capture_output = True)
+
+        # with open('large_sentence.txt', 'w') as file:
+        #     # Write the string into the file
+        #     file.write(sentence[0])
+
+        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "tik_token_command.py", sentence[0]], capture_output = True)
         
         formatted_text = str(output.stderr).split(" ")
         cleaned_data = [item for item in formatted_text if item.strip()]

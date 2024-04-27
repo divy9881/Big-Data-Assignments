@@ -9,6 +9,7 @@ def main():
         sys.exit(1)
     
     # command : python3 generate_sentences.py english/base_dataset 128000
+    # command : python3 main.py english/base_dataset 128000
 
     file_path = sys.argv[1]
     # Max length from command-line argument
