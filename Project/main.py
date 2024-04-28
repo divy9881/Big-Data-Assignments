@@ -1,6 +1,7 @@
 import sys
 from generate_sentences import generate_sentences,read_text_file
-from perf_stats import calc_stats
+#from perf_stats import calc_stats
+from perf_stats_cpulimit import calc_stats
 
 def main():
 

@@ -12,6 +12,8 @@ sudo apt install cpulimit
 cpulimit -l 1 -- python main.py english/base_dataset 10
 cpulimit -c 1 -l 1 -- python main.py english/base_dataset 10 # to limit core to 1
 
+cpulimit -l 1 -i -- python main.py english/base_dataset 150000
+
 # command : python3 generate_sentences.py english/base_dataset 128000
 # command : python3 main.py english/base_dataset 128000
 
