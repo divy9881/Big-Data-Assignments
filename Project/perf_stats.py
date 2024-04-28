@@ -2,7 +2,7 @@ import subprocess
 import csv
 
 def write_to_csv(data):
-    csv_file_path = "stats_128k_file_yttm.csv"
+    csv_file_path = "sample_output.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -33,8 +33,12 @@ def calc_stats(sentences):
             # Write the string into the file
             file.write(sentence[0])
 
-        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me_file.py", "large_sentence.txt"], capture_output = True)
+        # perf stat command
+        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
         
+        # cpu limit command
+        # output = subprocess.run(["sudo","cpulimit","-c",,"python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
+
         formatted_text = str(output.stderr).split(" ")
         cleaned_data = [item for item in formatted_text if item.strip()]
 
@@ -77,10 +81,16 @@ def calc_stats(sentences):
 
         if cur_len == result['length']:
             for instr in instr_arr:
-                if instr in su:
-                    su[instr] += float(result[instr].replace(',', ''))
-                else:
-                    su[instr] = float(result[instr].replace(',', ''))
+                # print(instr)
+                # print(result[instr])
+                try:
+                    if instr in su:
+                        su[instr] += float(result[instr].replace(',', ''))
+                    else:
+                        su[instr] = float(result[instr].replace(',', ''))
+                except Exception:
+                    su[instr] = 0
+                    
             count += 1
     
     # calculating average for the last length.
