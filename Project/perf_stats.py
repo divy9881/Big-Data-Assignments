@@ -2,7 +2,7 @@ import subprocess
 import csv
 
 def write_to_csv(data):
-    csv_file_path = "stats_16k_command_yttm.csv"
+    csv_file_path = "stats_128k_file_yttm.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -29,11 +29,11 @@ def calc_stats(sentences):
     for sentence in sentences:
         sentence_stat = {}
 
-        # with open('large_sentence.txt', 'w') as file:
-        #     # Write the string into the file
-        #     file.write(sentence[0])
+        with open('large_sentence.txt', 'w') as file:
+            # Write the string into the file
+            file.write(sentence[0])
 
-        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me_command.py", sentence[0]], capture_output = True)
+        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me_file.py", "large_sentence.txt"], capture_output = True)
         
         formatted_text = str(output.stderr).split(" ")
         cleaned_data = [item for item in formatted_text if item.strip()]
