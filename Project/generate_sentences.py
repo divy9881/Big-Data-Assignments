@@ -7,9 +7,9 @@ def read_text_file(file_path):
         text = text.split(' ')
     return text
 
-def generate_sentences(text, max_length):
+def generate_sentences(text, min_length, max_length):
     """Generates sentences of varying lengths from the given text."""
-    length=1
+    length=min_length
     sentences = []
     text_length = len(text)
     while length <= max_length:

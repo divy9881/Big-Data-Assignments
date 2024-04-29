@@ -5,23 +5,28 @@ from perf_stats_cpulimit import calc_stats
 
 def main():
 
-    if len(sys.argv) != 3:
-        print("Usage: python script_name.py <text_file_path> <max_length>")
+    if len(sys.argv) != 4:
+        print("Usage: python script_name.py <text_file_path> <min_length> <max_length>")
         sys.exit(1)
     
     # command : python3 generate_sentences.py english/base_dataset 128000
     # command : python3 main.py english/base_dataset 128000
 
     file_path = sys.argv[1]
+    # MIn length from cmd
+    min_length = int(sys.argv[2])
     # Max length from command-line argument
-    max_length = int(sys.argv[2])
+    max_length = int(sys.argv[3])
 
     # Read the text from the file
     text = read_text_file(file_path)
 
     # Generate sentences
-    sentences = generate_sentences(text, max_length)
-    calc_stats(sentences)
+    sentences = generate_sentences(text, min_length, max_length)
+    percentage = 1
+    while percentage <= 100:
+        calc_stats(sentences, min_length, percentage)
+        percentage *= 2
     # Display the generated sentences
     # for i, sentence in enumerate(sentences):
     #     print(f"Sentence {i+1} ({sentence[1]} words): {sentence[0]}")

@@ -2,8 +2,8 @@ import subprocess
 import csv
 import time
 
-def write_to_csv(data):
-    csv_file_path = "sample_output.csv"
+def write_to_csv(data, percentage):
+    csv_file_path = "cpu_limit_" + str(percentage) +  "_tiktoken_stats.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -22,7 +22,7 @@ def write_to_csv(data):
     print("CSV file has been created successfully.")
 
 
-def calc_stats(sentences):
+def calc_stats(sentences, min_length, percentage):
     results = []
     # code to populate 100 results for each sentence length.
     instr_arr = ["time"]
@@ -37,7 +37,7 @@ def calc_stats(sentences):
         start_time = time.time()
 
         # cpu limit command
-        output = subprocess.run(["sudo","cpulimit","-l","1","-i","--","python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
+        output = subprocess.run(["sudo","cpulimit","-l",str(percentage),"-i","--","python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
 
         end_time = time.time()
         # print(start_time)
@@ -58,7 +58,7 @@ def calc_stats(sentences):
     averages = []
     average = {}
     su = {}
-    cur_len = 1
+    cur_len = min_length
     count = 0
     for result in results:
         if cur_len != result['length']:
@@ -101,4 +101,4 @@ def calc_stats(sentences):
     su = {}
 
     print(averages)
-    write_to_csv(averages)
+    write_to_csv(averages, percentage)

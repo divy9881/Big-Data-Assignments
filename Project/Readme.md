@@ -21,3 +21,6 @@ cpulimit -l 1 -i -- python main.py english/base_dataset 150000
 $ make
 # locate sysctl.h and change the include path (if error comes)
 # cp src/cpulimit /usr/bin
+
+# cpu limit running command : (changed in the perf_stat_cpu_limit file)
+ python3 main.py english/base_dataset 131072 131072
