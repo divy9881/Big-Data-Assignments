@@ -23,8 +23,8 @@ def main():
 
     # Generate sentences
     sentences = generate_sentences(text, min_length, max_length)
-    percentage = 5
-    while percentage <= 100:
+    percentage = 50
+    while percentage <= 50:
         calc_stats(sentences, min_length, percentage)
         percentage += 5
     # Display the generated sentences

@@ -3,7 +3,8 @@ import csv
 import time
 
 def write_to_csv(data, percentage):
-    csv_file_path = "./cpu_limit_tiktoken_stats/cpu_limit_" + str(percentage) +  "_tiktoken_stats.csv"
+    #csv_file_path = "./cpu_limit_tiktoken_stats/cpu_limit_" + str(percentage) +  "_tiktoken_stats.csv"
+    csv_file_path = "cpu_limit_50_tik_token_time_length_till_550k_stats.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -29,6 +30,7 @@ def calc_stats(sentences, min_length, percentage):
 
     for sentence in sentences:
         sentence_stat = {}
+        print(sentence[1])
 
         with open('large_sentence.txt', 'w') as file:
             # Write the string into the file
