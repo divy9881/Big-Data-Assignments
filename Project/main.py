@@ -23,10 +23,11 @@ def main():
 
     # Generate sentences
     sentences = generate_sentences(text, min_length, max_length)
-    percentage = 1
-    while percentage <= 100:
-        calc_stats(sentences, min_length, percentage)
-        percentage *= 2
+    percentage = 25
+    while percentage <= 25:
+        for tokenizer in ["tik_token", "you_token_to_me"]:
+            calc_stats(sentences, min_length, percentage, tokenizer)
+        percentage += 5
     # Display the generated sentences
     # for i, sentence in enumerate(sentences):
     #     print(f"Sentence {i+1} ({sentence[1]} words): {sentence[0]}")
