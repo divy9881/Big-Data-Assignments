@@ -1,7 +1,7 @@
 import sys
 from generate_sentences import generate_sentences,read_text_file
-from perf_stats import calc_stats
-#from perf_stats_cpulimit import calc_stats
+#from perf_stats import calc_stats
+from perf_stats_cpulimit import calc_stats
 
 def main():
 
@@ -23,13 +23,12 @@ def main():
 
     # Generate sentences
     sentences = generate_sentences(text, min_length, max_length)
-    # percentage = 100
-    # while percentage <= 100:
-    #     for tokenizer in ["tik_token", "you_token_to_me"]:
-    #         calc_stats(sentences, min_length, percentage, tokenizer)
-    #     percentage += 5
+    percentage = 100
+    while percentage <= 100:
+        calc_stats(sentences, min_length, percentage, "tiktoken")
+        percentage += 5
 
-    calc_stats(sentences)
+    # calc_stats(sentences)
 
 
     # Display the generated sentences

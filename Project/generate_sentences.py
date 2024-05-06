@@ -16,7 +16,7 @@ def generate_sentences(text, min_length, max_length):
         count = 0
         start_index = 0
         # Generate 50 sentences of length words, to average out all variance in results.
-        while count < 50:
+        while count < 10:
             end_index = (start_index+length)%text_length
 
             if start_index < end_index:

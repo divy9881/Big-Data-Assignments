@@ -4,7 +4,8 @@ import time
 
 def write_to_csv(data, percentage, tokenizer):
     #csv_file_path = "./cpu_limit_tiktoken_stats/cpu_limit_" + str(percentage) +  "_tiktoken_stats.csv"
-    csv_file_path = "cpu_limit_" + str(percentage) + "_" + tokenizer + "_time_length_till_550k_stats.csv"
+    # csv_file_path = "cpu_limit_" + str(percentage) + "_" + tokenizer + "_time_language.csv"
+    csv_file_path = tokenizer + "_language_hindi.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -39,7 +40,7 @@ def calc_stats(sentences, min_length, percentage, tokenizer):
         start_time = time.time()
 
         # cpu limit command
-        output = subprocess.run(["sudo","cpulimit","-l",str(percentage),"-i","--","python3", tokenizer + "_file.py", "large_sentence.txt"], capture_output = True)
+        output = subprocess.run(["sudo","cpulimit","-l",str(percentage),"-i","--","python3","tik_token_file.py", "large_sentence.txt"], capture_output = True)
 
         end_time = time.time()
         # print(start_time)
