@@ -2,7 +2,7 @@ import subprocess
 import csv
 
 def write_to_csv(data):
-    csv_file_path = "sample_output.csv"
+    csv_file_path = "you_token_to_me_russian.csv"
 
     # Specify the fieldnames based on the keys in your dictionaries
     fieldnames = data[0].keys()
@@ -34,7 +34,7 @@ def calc_stats(sentences):
             file.write(sentence[0])
 
         # perf stat command
-        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
+        output = subprocess.run(["sudo","perf","stat","-e","instructions,cache-misses,cache-references,L1-dcache-load-misses,L1-dcache-loads,LLC-load-misses,LLC-loads","python3", "you_token_to_me_russian.py", "large_sentence.txt"], capture_output = True)
         
         # cpu limit command
         # output = subprocess.run(["sudo","cpulimit","-c",,"python3", "tik_token_file.py", "large_sentence.txt"], capture_output = True)
@@ -78,6 +78,7 @@ def calc_stats(sentences):
             averages.append(average)
             average = {}
             su = {}
+            print(cur_len)
 
         if cur_len == result['length']:
             for instr in instr_arr:
