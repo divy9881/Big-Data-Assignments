@@ -25,7 +25,7 @@ def main():
     sentences = generate_sentences(text, min_length, max_length)
     percentage = 100
     while percentage <= 100:
-        calc_stats(sentences, min_length, percentage, "tiktoken")
+        calc_stats(sentences, min_length, percentage, "yttm")
         percentage += 5
 
     # calc_stats(sentences)
